@@ -23,7 +23,6 @@ import {
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// 🔴 خاصك تبدل هادشي بالمفاتيح ديال مشروع Firebase ديالك (شوف README.md)
 const firebaseConfig = {
   apiKey: "AIzaSyCRzdVr2Qxnurt5986RvmzdvNh9wUAOIFU",
   authDomain: "chatapp-d82d5.firebaseapp.com",
@@ -60,7 +59,7 @@ function toast(msg) {
 let currentUserData = null;
 let usersUnsub = null;
 let messagesUnsub = null;
-let activeChat = null; // { chatId, otherUser }
+let activeChat = null;
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
@@ -82,7 +81,8 @@ $("#login-form").addEventListener("submit", async (e) => {
   try {
     await signInWithEmailAndPassword(auth, email, password);
   } catch (err) {
-    $("#login-error").textContent = translateError(err.code);
+    $("#login-error").textContent = "خطأ: " + err.code + " | " + err.message;
+    console.error(err);
   }
 });
 
@@ -104,7 +104,8 @@ $("#signup-form").addEventListener("submit", async (e) => {
       createdAt: serverTimestamp(),
     });
   } catch (err) {
-    $("#signup-error").textContent = translateError(err.code);
+    $("#signup-error").textContent = "خطأ: " + err.code + " | " + err.message;
+    console.error(err);
   }
 });
 
@@ -216,7 +217,6 @@ $("#message-form").addEventListener("submit", async (e) => {
   });
 });
 
-// auto-grow textarea
 $("#message-input").addEventListener("input", function () {
   this.style.height = "auto";
   this.style.height = Math.min(this.scrollHeight, 100) + "px";
@@ -237,7 +237,6 @@ document.querySelectorAll(".plan-card").forEach((card) => {
 });
 
 $("#subscribe-btn").addEventListener("click", async () => {
-  // ⚠️ هادشي واجهة تجريبية فقط. الدفع الحقيقي خاصو Stripe/webhook - شوف README.md
   try {
     await updateDoc(doc(db, "users", auth.currentUser.uid), {
       isPremium: true,
@@ -256,7 +255,6 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-// ---------- Service worker ----------
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("service-worker.js").catch(() => {});
