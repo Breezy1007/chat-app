@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>دردشة</title>
+<meta name="theme-color" content="#14171F" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ============ تسجيل الدخول ============ -->
+<section id="view-login" class="view active">
+  <div class="auth-card">
+    <div class="brand">
+      <span class="brand-mark">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+      </span>
+      <h1 class="brand-name">دردشة</h1>
+    </div>
+    <p class="auth-sub">مرحبا بيك، دخل باش تكمل</p>
+
+    <form id="login-form">
+      <label class="field">
+        <span>البريد الإلكتروني</span>
+        <input type="email" id="login-email" required autocomplete="email" />
+      </label>
+      <label class="field">
+        <span>كلمة السر</span>
+        <input type="password" id="login-password" required autocomplete="current-password" />
+      </label>
+      <p class="error" id="login-error"></p>
+      <button type="submit" class="btn btn-primary">دخول</button>
+    </form>
+
+    <button class="link-btn" id="go-signup">ماعندكش حساب؟ صيفط واحد جديد</button>
+  </div>
+</section>
+
+<!-- ============ حساب جديد ============ -->
+<section id="view-signup" class="view">
+  <div class="auth-card">
+    <div class="brand">
+      <span class="brand-mark"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span></span>
+      <h1 class="brand-name">دردشة</h1>
+    </div>
+    <p class="auth-sub">صيفط حساب جديد فثواني</p>
+
+    <form id="signup-form">
+      <label class="field">
+        <span>سميتك</span>
+        <input type="text" id="signup-name" required autocomplete="name" />
+      </label>
+      <label class="field">
+        <span>البريد الإلكتروني</span>
+        <input type="email" id="signup-email" required autocomplete="email" />
+      </label>
+      <label class="field">
+        <span>كلمة السر</span>
+        <input type="password" id="signup-password" required autocomplete="new-password" minlength="6" />
+      </label>
+      <p class="error" id="signup-error"></p>
+      <button type="submit" class="btn btn-primary">صيفط الحساب</button>
+    </form>
+
+    <button class="link-btn" id="go-login">عندك حساب؟ دخل من هنا</button>
+  </div>
+</section>
+
+<!-- ============ لائحة الشاتات ============ -->
+<section id="view-chatlist" class="view">
+  <header class="topbar">
+    <h1>الشاتات</h1>
+    <button class="pill-btn" id="open-premium">⭐ Premium</button>
+  </header>
+
+  <div class="search-wrap">
+    <input type="text" id="search-users" placeholder="قلب على شخص..." />
+  </div>
+
+  <ul id="users-list" class="users-list"></ul>
+  <p id="users-empty" class="empty-state" hidden>ماكاينش حتى حد آخر مسجل دابا. شارك الرابط مع صحابك!</p>
+
+  <button class="logout-btn" id="logout-btn">خروج</button>
+</section>
+
+<!-- ============ الشات ============ -->
+<section id="view-chatroom" class="view">
+  <header class="topbar chatroom-header">
+    <button class="icon-btn" id="back-to-list">→</button>
+    <div class="chatroom-title">
+      <div class="mini-avatar" id="chatroom-avatar"></div>
+      <span id="chatroom-name"></span>
+    </div>
+  </header>
+
+  <div id="messages" class="messages"></div>
+
+  <form id="message-form" class="message-form">
+    <textarea id="message-input" placeholder="كتب مسج..." rows="1"></textarea>
+    <button type="submit" class="send-btn" aria-label="صيفط">➤</button>
+  </form>
+</section>
+
+<!-- ============ Premium ============ -->
+<section id="view-premium" class="view">
+  <header class="topbar">
+    <button class="icon-btn" id="back-from-premium">→</button>
+    <h1>⭐ Premium</h1>
+  </header>
+
+  <div class="premium-wrap">
+    <p class="premium-tagline">حيد الإعلانات، صيفط بلا حدود، وميزات جداد قريبا</p>
+
+    <div class="plan-card" data-plan="monthly">
+      <div>
+        <div class="plan-name">شهري</div>
+        <div class="plan-price">29 درهم / شهر</div>
+      </div>
+      <span class="radio"></span>
+    </div>
+    <div class="plan-card" data-plan="yearly">
+      <div>
+        <div class="plan-name">سنوي <span class="badge">وفر 20%</span></div>
+        <div class="plan-price">279 درهم / عام</div>
+      </div>
+      <span class="radio"></span>
+    </div>
+
+    <button class="btn btn-accent" id="subscribe-btn">اشترك دابا</button>
+    <p class="premium-note">
+      هاد الزر واجهة تجريبية فقط. باش تاخد فلوس بجد خاصك تربطها مع Stripe
+      (شوف README.md).
+    </p>
+  </div>
+</section>
+
+<div id="toast" class="toast"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
