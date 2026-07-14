@@ -25,12 +25,12 @@ import {
 
 // 🔴 خاصك تبدل هادشي بالمفاتيح ديال مشروع Firebase ديالك (شوف README.md)
 const firebaseConfig = {
-  apiKey: "PUT_YOUR_API_KEY_HERE",
-  authDomain: "PUT_YOUR_PROJECT.firebaseapp.com",
-  projectId: "PUT_YOUR_PROJECT_ID",
-  storageBucket: "PUT_YOUR_PROJECT.appspot.com",
-  messagingSenderId: "PUT_YOUR_SENDER_ID",
-  appId: "PUT_YOUR_APP_ID",
+  apiKey: "AIzaSyCRzdVr2Qxnurt5986RvmzdvNh9wUAOIFU",
+  authDomain: "chatapp-d82d5.firebaseapp.com",
+  projectId: "chatapp-d82d5",
+  storageBucket: "chatapp-d82d5.firebasestorage.app",
+  messagingSenderId: "584943662499",
+  appId: "1:584943662499:web:9dd3f1a0cfc283b1279616",
 };
 
 const app = initializeApp(firebaseConfig);
