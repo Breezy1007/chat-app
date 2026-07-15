@@ -150,7 +150,7 @@ function renderUsers(list) {
         <div class="user-name">${escapeHtml(u.name)}</div>
         <div class="user-sub">بدا الشات</div>
       </div>`;
-    li.addEventListener("click", () => openChat(u));
+    li.addEventListener("click", () => { openChat(u); });
     ul.appendChild(li);
   });
 }
@@ -223,31 +223,41 @@ $("#message-input").addEventListener("input", function () {
 });
 
 // ---------- Premium ----------
-$("#open-premium").addEventListener("click", () => showView("view-premium"));
+$("#open-premium").addEventListener("click", () => {
+  showView("view-premium");
+  renderPaypalButton();
+});
 $("#back-from-premium").addEventListener("click", () => showView("view-chatlist"));
 
-let selectedPlan = "monthly";
-document.querySelectorAll(".plan-card").forEach((card) => {
-  if (card.dataset.plan === selectedPlan) card.classList.add("selected");
-  card.addEventListener("click", () => {
-    document.querySelectorAll(".plan-card").forEach((c) => c.classList.remove("selected"));
-    card.classList.add("selected");
-    selectedPlan = card.dataset.plan;
-  });
-});
-
-$("#subscribe-btn").addEventListener("click", async () => {
-  try {
-    await updateDoc(doc(db, "users", auth.currentUser.uid), {
-      isPremium: true,
-      plan: selectedPlan,
-    });
-    toast("مبروك 🎉 دابا عندك Premium!");
-    showView("view-chatlist");
-  } catch (e) {
-    toast("ما قدرناش نفعلو الاشتراك، عاود جرب");
-  }
-});
+let paypalRendered = false;
+function renderPaypalButton() {
+  if (paypalRendered) return;
+  if (typeof paypal === "undefined") return;
+  paypalRendered = true;
+  paypal
+    .Buttons({
+      style: { shape: "rect", color: "gold", layout: "vertical", label: "subscribe" },
+      createSubscription: function (data, actions) {
+        return actions.subscription.create({
+          plan_id: "P-3UD37783UJ624772WNJLNPQQ",
+        });
+      },
+      onApprove: async function (data) {
+        try {
+          await updateDoc(doc(db, "users", auth.currentUser.uid), {
+            isPremium: true,
+            plan: "monthly",
+            paypalSubscriptionId: data.subscriptionID,
+          });
+          toast("مبروك 🎉 دابا عندك Premium!");
+          showView("view-chatlist");
+        } catch (e) {
+          toast("تفعل الدفع، ولكن وقعت مشكلة تقنية. تواصل معايا.");
+        }
+      },
+    })
+    .render("#paypal-button-container-P-3UD37783UJ624772WNJLNPQQ");
+}
 
 function escapeHtml(str) {
   const div = document.createElement("div");
