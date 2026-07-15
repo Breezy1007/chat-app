@@ -165,14 +165,14 @@ function getChatId(otherUid) {
   return [auth.currentUser.uid, otherUid].sort().join("_");
 }
 
-function openChat(otherUser) {
+async function openChat(otherUser) {
   const chatId = getChatId(otherUser.uid);
   activeChat = { chatId, otherUser };
 
   $("#chatroom-name").textContent = otherUser.name;
   $("#chatroom-avatar").textContent = (otherUser.name || "?").charAt(0).toUpperCase();
 
-  setDoc(
+  await setDoc(
     doc(db, "chats", chatId),
     { members: [auth.currentUser.uid, otherUser.uid], updatedAt: serverTimestamp() },
     { merge: true }
