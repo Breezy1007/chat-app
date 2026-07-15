@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="style.css" />
+<script src="https://www.paypal.com/sdk/js?client-id=AXYvsqI7dnynFrpeLV1PbhcBtSrPgsg_KyZsza-AI8PisECta8ZocHh4HNa-_DE_PEw1wGCfzuxf3A2d&vault=true&intent=subscription"></script>
 </head>
 <body>
 
@@ -120,25 +121,17 @@
   <div class="premium-wrap">
     <p class="premium-tagline">حيد الإعلانات، صيفط بلا حدود، وميزات جداد قريبا</p>
 
-    <div class="plan-card" data-plan="monthly">
+    <div class="plan-card selected" style="cursor:default;">
       <div>
         <div class="plan-name">شهري</div>
         <div class="plan-price">29 درهم / شهر</div>
       </div>
-      <span class="radio"></span>
-    </div>
-    <div class="plan-card" data-plan="yearly">
-      <div>
-        <div class="plan-name">سنوي <span class="badge">وفر 20%</span></div>
-        <div class="plan-price">279 درهم / عام</div>
-      </div>
-      <span class="radio"></span>
     </div>
 
-    <button class="btn btn-accent" id="subscribe-btn">اشترك دابا</button>
+    <div id="paypal-button-container-P-3UD37783UJ624772WNJLNPQQ" style="margin-top:16px;"></div>
+
     <p class="premium-note">
-      هاد الزر واجهة تجريبية فقط. باش تاخد فلوس بجد خاصك تربطها مع Stripe
-      (شوف README.md).
+      الدفع كيمر عبر PayPal بشكل آمن. منين تأكد الدفع، Premium كيتفعل تلقائيا.
     </p>
   </div>
 </section>
