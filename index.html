@@ -14,7 +14,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="style.css" />
-<script src="https://www.paypal.com/sdk/js?client-id=AXYvsqI7dnynFrpeLV1PbhcBtSrPgsg_KyZsza-AI8PisECta8ZocHh4HNa-_DE_PEw1wGCfzuxf3A2d&vault=true&intent=subscription"></script>
 </head>
 <body>
 
@@ -119,7 +118,6 @@
   </header>
 
   <div class="premium-wrap">
-    <p style="color:#FFB84D;font-size:12px;">🔧 نسخة v3</p>
     <p class="premium-tagline">حيد الإعلانات، صيفط بلا حدود، وميزات جداد قريبا</p>
 
     <div class="plan-card selected" style="cursor:default;">
@@ -129,11 +127,26 @@
       </div>
     </div>
 
-    <div id="paypal-button-container-P-3UD37783UJ624772WNJLNPQQ" style="margin-top:16px;"></div>
+    <div class="bank-box">
+      <div class="bank-row">
+        <span class="bank-label">المستفيد</span>
+        <span class="bank-value">EL YASSER</span>
+      </div>
+      <div class="bank-row">
+        <span class="bank-label">RIB</span>
+        <span class="bank-value" id="rib-value">007780001017700030274288</span>
+      </div>
+      <button class="btn btn-primary" id="copy-rib-btn" style="margin-top:10px;">📋 نسخ RIB</button>
+    </div>
 
-    <p class="premium-note">
-      الدفع كيمر عبر PayPal بشكل آمن. منين تأكد الدفع، Premium كيتفعل تلقائيا.
-    </p>
+    <ol class="steps-list">
+      <li>دير تحويل بنكي (أو Cash Plus / Wafacash) بـ 29 درهم لهاد RIB</li>
+      <li>اضغط الزر تحت "ديت التحويل" باش نتوصل بالطلب ديالك</li>
+      <li>غادي نتحقق ونفعلو ليك Premium فأقرب وقت (عادة فنفس اليوم)</li>
+    </ol>
+
+    <button class="btn btn-accent" id="confirm-transfer-btn">✅ ديت التحويل</button>
+    <p class="premium-note" id="premium-status-note"></p>
   </div>
 </section>
 
