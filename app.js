@@ -225,55 +225,35 @@ $("#message-input").addEventListener("input", function () {
 // ---------- Premium ----------
 $("#open-premium").addEventListener("click", () => {
   showView("view-premium");
-  renderPaypalButton();
+  refreshPremiumStatus();
 });
 $("#back-from-premium").addEventListener("click", () => showView("view-chatlist"));
 
-let paypalRendered = false;
-function renderPaypalButton() {
-  const container = document.getElementById("paypal-button-container-P-3UD37783UJ624772WNJLNPQQ");
-  if (paypalRendered) return;
-  if (typeof paypal === "undefined") {
-    container.textContent = "خطأ: SDK ديال PayPal ماتحملش. تأكد من الإنترنت وعاود.";
-    return;
-  }
-  paypalRendered = true;
+$("#copy-rib-btn").addEventListener("click", async () => {
+  const rib = $("#rib-value").textContent.trim();
   try {
-    paypal
-      .Buttons({
-        style: { shape: "rect", color: "gold", layout: "vertical", label: "subscribe" },
-        createSubscription: function (data, actions) {
-          return actions.subscription.create({
-            plan_id: "P-3UD37783UJ624772WNJLNPQQ",
-          });
-        },
-        onApprove: async function (data) {
-          try {
-            await updateDoc(doc(db, "users", auth.currentUser.uid), {
-              isPremium: true,
-              plan: "monthly",
-              paypalSubscriptionId: data.subscriptionID,
-            });
-            toast("مبروك 🎉 دابا عندك Premium!");
-            showView("view-chatlist");
-          } catch (e) {
-            toast("تفعل الدفع، ولكن وقعت مشكلة تقنية. تواصل معايا.");
-          }
-        },
-        onError: function (err) {
-          container.textContent = "خطأ PayPal: " + err;
-          console.error(err);
-        },
-      })
-      .render("#paypal-button-container-P-3UD37783UJ624772WNJLNPQQ")
-      .catch(function (err) {
-        container.textContent = "خطأ فالعرض: " + err.message;
-        console.error(err);
-      });
-  } catch (err) {
-    container.textContent = "خطأ: " + err.message;
-    console.error(err);
+    await navigator.clipboard.writeText(rib);
+    toast("تنسخ RIB ✅");
+  } catch (e) {
+    toast("ما قدرناش ننسخو، انسخو بيدك");
   }
+});
+
+$("#confirm-transfer-btn").addEventListener("click", async () => {
+  try {
+    await updateDoc(doc(db, "users", auth.currentUser.uid), {
+      premiumRequested: true,
+      premiumRequestedAt: serverTimestamp(),
+    });
+    $("#premium-status-note").textContent =
+      "توصلنا بالطلب ديالك ✅ غادي نفعلو ليك Premium فأقرب وقت منين نتأكدو من التحويل.";
+  } catch (e) {
+    toast("وقعت مشكلة، عاود جرب");
+  }
+});
+
+async function refreshPremiumStatus() {
+  // ما درنا حتى حاجة هنا حاليا - الملاحظة كتبان غير بعد الضغط على "ديت التحويل"
 }
 
 function escapeHtml(str) {
