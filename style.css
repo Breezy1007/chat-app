@@ -285,7 +285,7 @@ body {
   white-space: pre-wrap;
 }
 .bubble.me {
-  align-self: flex-start; /* RTL: sender's own message aligns to left visually reversed */
+  align-self: flex-start;
   background: linear-gradient(135deg, var(--accent), var(--accent-bright));
   color: white;
   border-bottom-left-radius: 5px;
@@ -369,6 +369,36 @@ body {
   text-align: center;
   margin-top: 20px;
   line-height: 1.6;
+}
+
+.bank-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin: 18px 0;
+}
+.bank-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.bank-row:last-of-type { border-bottom: none; }
+.bank-label { color: var(--text-dim); font-size: 13px; }
+.bank-value {
+  font-weight: 700;
+  font-size: 15px;
+  direction: ltr;
+  unicode-bidi: plaintext;
+}
+.steps-list {
+  color: var(--text-dim);
+  font-size: 14px;
+  line-height: 2;
+  padding-inline-start: 20px;
+  margin-bottom: 20px;
 }
 
 /* ---------- Toast ---------- */
