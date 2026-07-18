@@ -14,6 +14,7 @@ import {
   getFirestore,
   doc,
   setDoc,
+  getDoc,
   updateDoc,
   onSnapshot,
   collection,
@@ -74,6 +75,7 @@ document.querySelectorAll(".nav-item").forEach((btn) => {
     document.querySelectorAll(".nav-item").forEach((b) => b.classList.remove("active"));
     document.querySelectorAll(`.nav-item[data-tab="${tab}"]`).forEach((b) => b.classList.add("active"));
     if (tab === "chats") showView("view-chatlist");
+    if (tab === "discover") { showView("view-discover"); startDiscover(); }
     if (tab === "premium") showView("view-premium");
     if (tab === "profile") { showView("view-profile"); renderProfile(); }
   });
@@ -123,6 +125,7 @@ $("#signup-form").addEventListener("submit", async (e) => {
   const name = $("#signup-name").value.trim();
   const email = $("#signup-email").value.trim();
   const password = $("#signup-password").value;
+  const bio = $("#signup-bio").value.trim();
   $("#signup-error").textContent = "";
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, password);
@@ -131,6 +134,7 @@ $("#signup-form").addEventListener("submit", async (e) => {
       uid: cred.user.uid,
       name,
       email,
+      bio: bio || "",
       isPremium: false,
       createdAt: serverTimestamp(),
     });
@@ -313,6 +317,95 @@ function renderProfile() {
     badge.className = "profile-badge free";
   }
 }
+
+// ---------- Discover / Match ----------
+let discoverQueue = [];
+let discoverStarted = false;
+
+function startDiscover() {
+  // كنبنيو لائحة ديال الناس اللي مازال ما عجبتيهمش
+  discoverQueue = allUsers.slice();
+  renderNextCard();
+  discoverStarted = true;
+}
+
+function renderNextCard() {
+  const stage = $("#card-stage");
+  stage.querySelectorAll(".profile-card").forEach((c) => c.remove());
+  $("#discover-empty").hidden = discoverQueue.length > 0;
+  if (discoverQueue.length === 0) return;
+
+  const u = discoverQueue[0];
+  const card = document.createElement("div");
+  card.className = "profile-card";
+  card.innerHTML = `
+    <div class="card-photo"><div class="avatar">${(u.name || "?").charAt(0).toUpperCase()}</div></div>
+    <div class="card-info">
+      <div class="card-name">${escapeHtml(u.name)}</div>
+      <div class="card-bio">${escapeHtml(u.bio || "ماكاينش وصف بعد")}</div>
+    </div>`;
+  stage.appendChild(card);
+}
+
+$("#pass-btn").addEventListener("click", () => {
+  if (!discoverQueue.length) return;
+  animateCardOut("left");
+});
+
+$("#like-btn").addEventListener("click", async () => {
+  if (!discoverQueue.length) return;
+  const target = discoverQueue[0];
+  animateCardOut("right");
+  await sendLike(target);
+});
+
+function animateCardOut(direction) {
+  const card = $("#card-stage").querySelector(".profile-card");
+  if (!card) return;
+  card.classList.add(direction === "left" ? "leaving-left" : "leaving-right");
+  setTimeout(() => {
+    discoverQueue.shift();
+    renderNextCard();
+  }, 300);
+}
+
+async function sendLike(target) {
+  const myUid = auth.currentUser.uid;
+  const likeId = `${myUid}_${target.uid}`;
+  const reverseId = `${target.uid}_${myUid}`;
+  try {
+    await setDoc(doc(db, "likes", likeId), {
+      from: myUid,
+      to: target.uid,
+      createdAt: serverTimestamp(),
+    });
+    // كنشوفو واش هو عجبني هو الآخر (إعجاب متبادل = Match)
+    const reverseSnap = await getDoc(doc(db, "likes", reverseId));
+    if (reverseSnap.exists()) {
+      showMatch(target);
+    } else {
+      toast("تصيفط الإعجاب ✅");
+    }
+  } catch (e) {
+    toast("وقعت مشكلة، عاود جرب");
+  }
+}
+
+function showMatch(otherUser) {
+  $("#match-avatar-me").textContent = (myUserData?.name || "?").charAt(0).toUpperCase();
+  $("#match-avatar-them").textContent = (otherUser.name || "?").charAt(0).toUpperCase();
+  $("#match-text").textContent = `نتا و${otherUser.name} عجبتيو لبعضياكم! بداو الشات دابا`;
+  $("#match-modal").hidden = false;
+  $("#match-chat-btn").onclick = () => {
+    $("#match-modal").hidden = true;
+    openChat(otherUser);
+  };
+}
+
+$("#match-close-btn").addEventListener("click", () => {
+  $("#match-modal").hidden = true;
+});
+
 
 // ---------- Service worker ----------
 if ("serviceWorker" in navigator) {
