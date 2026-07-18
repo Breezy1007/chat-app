@@ -1,5 +1,5 @@
 // service-worker.js
-const CACHE_NAME = "chat-app-v3";
+const CACHE_NAME = "chat-app-v4";
 const ASSETS = [
   "index.html",
   "style.css",
@@ -25,11 +25,12 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+// Network-first for Firebase/API calls, cache-first for local static assets
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   const isLocal = url.origin === self.location.origin;
 
-  if (!isLocal) return;
+  if (!isLocal) return; // let Firebase requests go straight to network
 
   event.respondWith(
     caches.match(event.request).then((cached) => cached || fetch(event.request))
