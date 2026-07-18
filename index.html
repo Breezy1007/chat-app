@@ -78,18 +78,36 @@
 <!-- ============ لائحة الشاتات ============ -->
 <section id="view-chatlist" class="view">
   <header class="topbar">
-    <h1>الشاتات</h1>
-    <button class="pill-btn" id="open-premium">⭐ Premium</button>
+    <div class="brand-mini">
+      <span class="brand-mark"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span></span>
+      <h1>الشاتات</h1>
+    </div>
   </header>
 
+  <div class="status-row" id="status-row"></div>
+
   <div class="search-wrap">
+    <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
     <input type="text" id="search-users" placeholder="قلب على شخص..." />
   </div>
 
   <ul id="users-list" class="users-list"></ul>
   <p id="users-empty" class="empty-state" hidden>ماكاينش حتى حد آخر مسجل دابا. شارك الرابط مع صحابك!</p>
 
-  <button class="logout-btn" id="logout-btn">خروج</button>
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-tab="chats">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H7l-3 3V5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      <span>الشاتات</span>
+    </button>
+    <button class="nav-item" data-tab="premium">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.7 6.9L12 17.3 5.7 20.8l1.7-6.9L2 9.2l7.1-.6L12 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      <span>Premium</span>
+    </button>
+    <button class="nav-item" data-tab="profile">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>حسابي</span>
+    </button>
+  </nav>
 </section>
 
 <!-- ============ الشات ============ -->
@@ -98,7 +116,10 @@
     <button class="icon-btn" id="back-to-list">→</button>
     <div class="chatroom-title">
       <div class="mini-avatar" id="chatroom-avatar"></div>
-      <span id="chatroom-name"></span>
+      <div>
+        <div id="chatroom-name" class="chatroom-name-text"></div>
+        <div class="chatroom-status">متصل الآن</div>
+      </div>
     </div>
   </header>
 
@@ -106,14 +127,15 @@
 
   <form id="message-form" class="message-form">
     <textarea id="message-input" placeholder="كتب مسج..." rows="1"></textarea>
-    <button type="submit" class="send-btn" aria-label="صيفط">➤</button>
+    <button type="submit" class="send-btn" aria-label="صيفط">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+    </button>
   </form>
 </section>
 
 <!-- ============ Premium ============ -->
 <section id="view-premium" class="view">
   <header class="topbar">
-    <button class="icon-btn" id="back-from-premium">→</button>
     <h1>⭐ Premium</h1>
   </header>
 
@@ -148,6 +170,54 @@
     <button class="btn btn-accent" id="confirm-transfer-btn">✅ ديت التحويل</button>
     <p class="premium-note" id="premium-status-note"></p>
   </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-item" data-tab="chats">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H7l-3 3V5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      <span>الشاتات</span>
+    </button>
+    <button class="nav-item active" data-tab="premium">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.7 6.9L12 17.3 5.7 20.8l1.7-6.9L2 9.2l7.1-.6L12 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      <span>Premium</span>
+    </button>
+    <button class="nav-item" data-tab="profile">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>حسابي</span>
+    </button>
+  </nav>
+</section>
+
+<!-- ============ البروفايل ============ -->
+<section id="view-profile" class="view">
+  <header class="topbar">
+    <h1>حسابي</h1>
+  </header>
+
+  <div class="profile-wrap">
+    <div class="profile-avatar" id="profile-avatar"></div>
+    <div class="profile-name" id="profile-name"></div>
+    <div class="profile-email" id="profile-email"></div>
+    <div class="profile-badge" id="profile-badge"></div>
+
+    <button class="btn" id="logout-btn" style="background:var(--surface);color:var(--danger);border:1px solid var(--danger);margin-top:32px;">
+      خروج
+    </button>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-item" data-tab="chats">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H7l-3 3V5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      <span>الشاتات</span>
+    </button>
+    <button class="nav-item" data-tab="premium">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.7 6.9L12 17.3 5.7 20.8l1.7-6.9L2 9.2l7.1-.6L12 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      <span>Premium</span>
+    </button>
+    <button class="nav-item active" data-tab="profile">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>حسابي</span>
+    </button>
+  </nav>
 </section>
 
 <div id="toast" class="toast"></div>
