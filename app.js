@@ -1,5 +1,5 @@
 // app.js
-// كل المنطق ديال التطبيق: تسجيل الدخول، الشات المباشر، والـ Premium
+// كل المنطق ديال التطبيق: تسجيل الدخول، الشات المباشر، الـ Premium، والبروفايل
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
@@ -15,8 +15,8 @@ import {
   doc,
   setDoc,
   updateDoc,
-  collection,
   onSnapshot,
+  collection,
   addDoc,
   query,
   orderBy,
@@ -55,22 +55,54 @@ function toast(msg) {
   toastTimer = setTimeout(() => el.classList.remove("show"), 2600);
 }
 
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str || "";
+  return div.innerHTML;
+}
+
+function formatTime(ts) {
+  if (!ts || !ts.toDate) return "";
+  const d = ts.toDate();
+  return d.toLocaleTimeString("ar-MA", { hour: "2-digit", minute: "2-digit" });
+}
+
+// ---------- Bottom nav (shared across tabs) ----------
+document.querySelectorAll(".nav-item").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll(".nav-item").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(`.nav-item[data-tab="${tab}"]`).forEach((b) => b.classList.add("active"));
+    if (tab === "chats") showView("view-chatlist");
+    if (tab === "premium") showView("view-premium");
+    if (tab === "profile") { showView("view-profile"); renderProfile(); }
+  });
+});
+
 // ---------- Auth state ----------
-let currentUserData = null;
 let usersUnsub = null;
 let messagesUnsub = null;
 let activeChat = null;
+let myUserData = null;
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
     showView("view-chatlist");
     listenToUsers();
+    listenToMyProfile();
   } else {
     if (usersUnsub) usersUnsub();
     if (messagesUnsub) messagesUnsub();
     showView("view-login");
   }
 });
+
+function listenToMyProfile() {
+  onSnapshot(doc(db, "users", auth.currentUser.uid), (snap) => {
+    myUserData = snap.data();
+    renderProfile();
+  });
+}
 
 // ---------- Login ----------
 $("#login-form").addEventListener("submit", async (e) => {
@@ -81,8 +113,7 @@ $("#login-form").addEventListener("submit", async (e) => {
   try {
     await signInWithEmailAndPassword(auth, email, password);
   } catch (err) {
-    $("#login-error").textContent = "خطأ: " + err.code + " | " + err.message;
-    console.error(err);
+    $("#login-error").textContent = translateError(err.code);
   }
 });
 
@@ -104,14 +135,12 @@ $("#signup-form").addEventListener("submit", async (e) => {
       createdAt: serverTimestamp(),
     });
   } catch (err) {
-    $("#signup-error").textContent = "خطأ: " + err.code + " | " + err.message;
-    console.error(err);
+    $("#signup-error").textContent = translateError(err.code);
   }
 });
 
 $("#go-signup").addEventListener("click", () => showView("view-signup"));
 $("#go-login").addEventListener("click", () => showView("view-login"));
-
 $("#logout-btn").addEventListener("click", () => signOut(auth));
 
 function translateError(code) {
@@ -126,14 +155,29 @@ function translateError(code) {
   return map[code] || "وقعت مشكلة، عاود المحاولة";
 }
 
-// ---------- Users list ----------
+// ---------- Users list + status row ----------
 let allUsers = [];
 function listenToUsers() {
   usersUnsub = onSnapshot(collection(db, "users"), (snap) => {
-    allUsers = snap.docs
-      .map((d) => d.data())
-      .filter((u) => u.uid !== auth.currentUser.uid);
+    allUsers = snap.docs.map((d) => d.data()).filter((u) => u.uid !== auth.currentUser.uid);
     renderUsers(allUsers);
+    renderStatusRow(allUsers);
+  });
+}
+
+function renderStatusRow(list) {
+  const row = $("#status-row");
+  row.innerHTML = "";
+  list.slice(0, 10).forEach((u) => {
+    const item = document.createElement("div");
+    item.className = "status-item";
+    item.innerHTML = `
+      <div class="status-ring">
+        <div class="avatar">${(u.name || "?").charAt(0).toUpperCase()}</div>
+      </div>
+      <span>${escapeHtml((u.name || "").split(" ")[0])}</span>`;
+    item.addEventListener("click", () => openChat(u));
+    row.appendChild(item);
   });
 }
 
@@ -191,10 +235,17 @@ function renderMessages(list) {
   const box = $("#messages");
   box.innerHTML = "";
   list.forEach((m) => {
-    const div = document.createElement("div");
-    div.className = "bubble " + (m.senderId === auth.currentUser.uid ? "me" : "other");
-    div.textContent = m.text;
-    box.appendChild(div);
+    const wrap = document.createElement("div");
+    wrap.className = "bubble-wrap " + (m.senderId === auth.currentUser.uid ? "me" : "other");
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = m.text;
+    const time = document.createElement("div");
+    time.className = "bubble-time";
+    time.textContent = formatTime(m.createdAt);
+    wrap.appendChild(bubble);
+    wrap.appendChild(time);
+    box.appendChild(wrap);
   });
   box.scrollTop = box.scrollHeight;
 }
@@ -210,6 +261,7 @@ $("#message-form").addEventListener("submit", async (e) => {
   const text = input.value.trim();
   if (!text || !activeChat) return;
   input.value = "";
+  input.style.height = "auto";
   await addDoc(collection(db, "chats", activeChat.chatId, "messages"), {
     text,
     senderId: auth.currentUser.uid,
@@ -223,12 +275,6 @@ $("#message-input").addEventListener("input", function () {
 });
 
 // ---------- Premium ----------
-$("#open-premium").addEventListener("click", () => {
-  showView("view-premium");
-  refreshPremiumStatus();
-});
-$("#back-from-premium").addEventListener("click", () => showView("view-chatlist"));
-
 $("#copy-rib-btn").addEventListener("click", async () => {
   const rib = $("#rib-value").textContent.trim();
   try {
@@ -252,16 +298,23 @@ $("#confirm-transfer-btn").addEventListener("click", async () => {
   }
 });
 
-async function refreshPremiumStatus() {
-  // ما درنا حتى حاجة هنا حاليا - الملاحظة كتبان غير بعد الضغط على "ديت التحويل"
+// ---------- Profile ----------
+function renderProfile() {
+  if (!myUserData) return;
+  $("#profile-avatar").textContent = (myUserData.name || "?").charAt(0).toUpperCase();
+  $("#profile-name").textContent = myUserData.name || "";
+  $("#profile-email").textContent = myUserData.email || "";
+  const badge = $("#profile-badge");
+  if (myUserData.isPremium) {
+    badge.textContent = "⭐ عضو Premium";
+    badge.className = "profile-badge premium";
+  } else {
+    badge.textContent = "حساب مجاني";
+    badge.className = "profile-badge free";
+  }
 }
 
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str || "";
-  return div.innerHTML;
-}
-
+// ---------- Service worker ----------
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("service-worker.js").catch(() => {});
