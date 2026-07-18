@@ -1,5 +1,5 @@
 // service-worker.js
-const CACHE_NAME = "chat-app-v2";
+const CACHE_NAME = "chat-app-v3";
 const ASSETS = [
   "index.html",
   "style.css",
